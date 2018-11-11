@@ -23,29 +23,32 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(express.static(path.join(__dirname, 'public')));
+app.set('trust proxy', true);
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost:27017/bookshop');
 
+mongoose.Promise = global.Promise;
 
 var db = mongoose.connection;
 db.on("error",console.error.bind(console,'# Mongo db connection error'));
-
+// app.use(cookieParser());
 //---------------session
 app.use(session({
+
   secret : 'SecretString',
   saveUninitialized : false,
   resave : false,
   //cookie : {maxAge : 1000*60*60*24*2},
+  cookie: {maxAge: 1000 * 60 * 60 * 24 * 2},
   store : new MongoStore({mongooseConnection : db,ttl : 2*24*60*60})
 }))
  
 //-----------post session in mongo
 
 app.post("/cart",function(req,res){
-  var cart = req.body;    
+  var cart = req.body; 
   req.session.cart = cart;
   req.session.save(function(err){
     if(err){
@@ -65,6 +68,9 @@ app.get("/cart",function(req,res){
 
 var Books = require('./models/books');
 
+
+
+//------------------------------------books
 app.post('/books',function(req,res){
   var book = req.body;
   Books.create(book,function(err,books){
@@ -118,6 +124,27 @@ app.put('/books/:_id',function(req,res){
     res.json(books);
   })
 })
+
+//---------------------- images
+
+app.get("/images",function(req,res){
+  const imgFolder = __dirname + '/public/images/';
+  const fs = require('fs');
+  fs.readdir(imgFolder,function(err,files){
+    if(err){
+      throw err;
+    }
+    const fileArr = [];
+    files.forEach(file => {
+        fileArr.push({name : file});
+    });
+
+    res.json(fileArr);
+  })
+})
+
+
+
 app.use('/', index);
 app.use('/users', users);
 
