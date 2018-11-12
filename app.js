@@ -1,12 +1,12 @@
 var express = require('express');
 var path = require('path');
 var cors = require('cors');
-var favicon = require('serve-favicon');
+// var favicon = require('serve-favicon');
 var logger = require('morgan');
-var cookieParser = require('cookie-parser');
+// var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-const session = require('express-session');
-const MongoStore = require('connect-mongo')(session);
+// const session = require('express-session');
+// const MongoStore = require('connect-mongo')(session);
 var index = require('./routes/index');
 var users = require('./routes/users');
 
@@ -15,8 +15,8 @@ var app = express();
 app.use(cors())
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+// app.set('views', path.join(__dirname, 'views'));
+// app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -25,46 +25,46 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(express.static(path.join(__dirname, 'public')));
-app.set('trust proxy', true);
+// app.set('trust proxy', true);
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/bookshop');
-
+// mongoose.connect('mongodb://localhost:27017/bookshop');
+mongoose.connect('mongodb://itree:itree123@ds157503.mlab.com:57503/bookshop');
 mongoose.Promise = global.Promise;
 
 var db = mongoose.connection;
 db.on("error",console.error.bind(console,'# Mongo db connection error'));
 // app.use(cookieParser());
 //---------------session
-app.use(session({
+// app.use(session({
 
-  secret : 'SecretString',
-  saveUninitialized : false,
-  resave : false,
-  //cookie : {maxAge : 1000*60*60*24*2},
-  cookie: {maxAge: 1000 * 60 * 60 * 24 * 2},
-  store : new MongoStore({mongooseConnection : db,ttl : 2*24*60*60})
-}))
+//   secret : 'SecretString',
+//   saveUninitialized : false,
+//   resave : false,
+//   //cookie : {maxAge : 1000*60*60*24*2},
+//   cookie: {maxAge: 1000 * 60 * 60 * 24 * 2},
+//   store : new MongoStore({mongooseConnection : db,ttl : 2*24*60*60})
+// }))
  
 //-----------post session in mongo
 
-app.post("/cart",function(req,res){
-  var cart = req.body; 
-  req.session.cart = cart;
-  req.session.save(function(err){
-    if(err){
-      throw err;
-    }
-    res.json(req.session.cart);
-  })
-})
+// app.post("/cart",function(req,res){
+//   var cart = req.body; 
+//   req.session.cart = cart;
+//   req.session.save(function(err){
+//     if(err){
+//       throw err;
+//     }
+//     res.json(req.session.cart);
+//   })
+// })
 
 //-------------get session in mongo
 
-app.get("/cart",function(req,res){
-  if(typeof req.session.cart != "undefined"){
-    res.json(req.session.cart);
-  }
-})
+// app.get("/cart",function(req,res){
+//   if(typeof req.session.cart != "undefined"){
+//     res.json(req.session.cart);
+//   }
+// })
 
 var Books = require('./models/books');
 
